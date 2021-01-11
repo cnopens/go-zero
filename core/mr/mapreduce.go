@@ -79,7 +79,7 @@ func Map(generate GenerateFunc, mapper MapFunc, opts ...Option) chan interface{}
 	collector := make(chan interface{}, options.workers)
 	done := syncx.NewDoneChan()
 
-	go mapDispatcher(mapper, source, collector, done.Done(), options.workers)
+	go executeMappers(mapper, source, collector, done.Done(), options.workers)
 
 	return collector
 }
@@ -124,8 +124,12 @@ func MapReduceWithSource(source <-chan interface{}, mapper MapperFunc, reducer R
 			}
 		}()
 		reducer(collector, writer, cancel)
+		drain(collector)
 	}()
-	go mapperDispatcher(mapper, source, collector, done.Done(), cancel, options.workers)
+
+	go executeMappers(func(item interface{}, w Writer) {
+		mapper(item, w, cancel)
+	}, source, collector, done.Done(), options.workers)
 
 	value, ok := <-output
 	if err := retErr.Load(); err != nil {
@@ -140,6 +144,7 @@ func MapReduceWithSource(source <-chan interface{}, mapper MapperFunc, reducer R
 func MapReduceVoid(generator GenerateFunc, mapper MapperFunc, reducer VoidReducerFunc, opts ...Option) error {
 	_, err := MapReduce(generator, mapper, func(input <-chan interface{}, writer Writer, cancel func(error)) {
 		reducer(input, cancel)
+		drain(input)
 		// We need to write a placeholder to let MapReduce to continue on reducer done,
 		// otherwise, all goroutines are waiting. The placeholder will be discarded by MapReduce.
 		writer.Write(lang.Placeholder)
@@ -222,20 +227,6 @@ func executeMappers(mapper MapFunc, input <-chan interface{}, collector chan<- i
 			})
 		}
 	}
-}
-
-func mapDispatcher(mapper MapFunc, input <-chan interface{}, collector chan<- interface{},
-	done <-chan lang.PlaceholderType, workers int) {
-	executeMappers(func(item interface{}, writer Writer) {
-		mapper(item, writer)
-	}, input, collector, done, workers)
-}
-
-func mapperDispatcher(mapper MapperFunc, input <-chan interface{}, collector chan<- interface{},
-	done <-chan lang.PlaceholderType, cancel func(error), workers int) {
-	executeMappers(func(item interface{}, writer Writer) {
-		mapper(item, writer, cancel)
-	}, input, collector, done, workers)
 }
 
 func newOptions() *mapReduceOptions {

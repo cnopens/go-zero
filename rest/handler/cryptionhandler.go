@@ -45,7 +45,7 @@ func decryptBody(key []byte, r *http.Request) error {
 	var content []byte
 	var err error
 	if r.ContentLength > 0 {
-		content = make([]byte, r.ContentLength, r.ContentLength)
+		content = make([]byte, r.ContentLength)
 		_, err = io.ReadFull(r.Body, content)
 	} else {
 		content, err = ioutil.ReadAll(io.LimitReader(r.Body, maxBytes))
@@ -80,6 +80,12 @@ func newCryptionResponseWriter(w http.ResponseWriter) *cryptionResponseWriter {
 	return &cryptionResponseWriter{
 		ResponseWriter: w,
 		buf:            new(bytes.Buffer),
+	}
+}
+
+func (w *cryptionResponseWriter) Flush() {
+	if flusher, ok := w.ResponseWriter.(http.Flusher); ok {
+		flusher.Flush()
 	}
 }
 

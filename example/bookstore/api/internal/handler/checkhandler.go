@@ -1,15 +1,16 @@
 package handler
 
 import (
+	"net/http"
+
 	"bookstore/api/internal/logic"
 	"bookstore/api/internal/svc"
 	"bookstore/api/internal/types"
-	"net/http"
 
 	"github.com/tal-tech/go-zero/rest/httpx"
 )
 
-func checkHandler(ctx *svc.ServiceContext) http.HandlerFunc {
+func CheckHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req types.CheckReq
 		if err := httpx.Parse(r, &req); err != nil {

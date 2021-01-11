@@ -6,57 +6,33 @@
 package adder
 
 import (
-	add "bookstore/rpc/add/pb"
 	"context"
 
-	"github.com/tal-tech/go-zero/core/jsonx"
-	"github.com/tal-tech/go-zero/rpcx"
+	"bookstore/rpc/add/add"
+
+	"github.com/tal-tech/go-zero/zrpc"
 )
 
 type (
+	AddReq  = add.AddReq
+	AddResp = add.AddResp
+
 	Adder interface {
 		Add(ctx context.Context, in *AddReq) (*AddResp, error)
 	}
 
 	defaultAdder struct {
-		cli rpcx.Client
+		cli zrpc.Client
 	}
 )
 
-func NewAdder(cli rpcx.Client) Adder {
+func NewAdder(cli zrpc.Client) Adder {
 	return &defaultAdder{
 		cli: cli,
 	}
 }
 
 func (m *defaultAdder) Add(ctx context.Context, in *AddReq) (*AddResp, error) {
-	var request add.AddReq
-	bts, err := jsonx.Marshal(in)
-	if err != nil {
-		return nil, errJsonConvert
-	}
-
-	err = jsonx.Unmarshal(bts, &request)
-	if err != nil {
-		return nil, errJsonConvert
-	}
-
 	client := add.NewAdderClient(m.cli.Conn())
-	resp, err := client.Add(ctx, &request)
-	if err != nil {
-		return nil, err
-	}
-
-	var ret AddResp
-	bts, err = jsonx.Marshal(resp)
-	if err != nil {
-		return nil, errJsonConvert
-	}
-
-	err = jsonx.Unmarshal(bts, &ret)
-	if err != nil {
-		return nil, errJsonConvert
-	}
-
-	return &ret, nil
+	return client.Add(ctx, in)
 }

@@ -4,10 +4,11 @@
 package server
 
 import (
+	"context"
+
+	"bookstore/rpc/check/check"
 	"bookstore/rpc/check/internal/logic"
 	"bookstore/rpc/check/internal/svc"
-	check "bookstore/rpc/check/pb"
-	"context"
 )
 
 type CheckerServer struct {

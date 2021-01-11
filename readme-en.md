@@ -1,6 +1,8 @@
-English | [简体中文](readme.md)
+<img align="right" width="150px" src="doc/images/go-zero.png">
 
 # go-zero
+
+English | [简体中文](readme.md)
 
 [![Go](https://github.com/tal-tech/go-zero/workflows/Go/badge.svg?branch=master)](https://github.com/tal-tech/go-zero/actions)
 [![codecov](https://codecov.io/gh/tal-tech/go-zero/branch/master/graph/badge.svg)](https://codecov.io/gh/tal-tech/go-zero)
@@ -8,7 +10,7 @@ English | [简体中文](readme.md)
 [![Release](https://img.shields.io/github/v/release/tal-tech/go-zero.svg?style=flat-square)](https://github.com/tal-tech/go-zero)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## 0. what is go-zero?
+## 0. what is go-zero
 
 go-zero is a web and rpc framework that with lots of engineering practices builtin. It’s born to ensure the stability of the busy services with resilience design, and has been serving sites with tens of millions users for years.
 
@@ -19,7 +21,7 @@ Advantages of go-zero:
 * improve the stability of the services with tens of millions of daily active users
 * builtin chained timeout control, concurrency control, rate limit, adaptive circuit breaker, adaptive load shedding, even no configuration needed
 * builtin middlewares also can be integrated into your frameworks
-* simple API syntax, one command to generate couple different languages
+* simple API syntax, one command to generate couple of different languages
 * auto validate the request parameters from clients
 * plenty of builtin microservice management and concurrent toolkits
 
@@ -27,7 +29,7 @@ Advantages of go-zero:
 
 ## 1. Backgrounds of go-zero
 
-At the beginning of 2018, we heavily suffered from frequent downtime. We decided to re-design our system, from monolithic architecture with Java+MongoDB to microservice architecture. After researches and comparison, we chose to:
+At the beginning of 2018, we decided to re-design our system, from monolithic architecture with Java+MongoDB to microservice architecture. After researches and comparison, we chose to:
 
 * Golang based
   * great performance
@@ -78,7 +80,7 @@ As below, go-zero protects the system with couple layers and mechanisms:
 
 ## 4. Future development plans of go-zero
 
-* auto generate API mock server, make the client debugging eaisier
+* auto generate API mock server, make the client debugging easier
 * auto generate the simple integration test for the server side just from the .api files
 
 ## 5. Installation
@@ -93,13 +95,13 @@ go get -u github.com/tal-tech/go-zero
 
 0. full examples can be checked out from below:
 
-     [Rapid development of microservice systems](doc/shorturl-en.md)
+     [Rapid development of microservice systems](https://github.com/tal-tech/zero-doc/blob/main/doc/shorturl-en.md)
 
-     [Rapid development of microservice systems - multiple RPCs](doc/bookstore-en.md)
+     [Rapid development of microservice systems - multiple RPCs](https://github.com/tal-tech/zero-doc/blob/main/doc/bookstore-en.md)
 
 1. install goctl
 
-   `goctl`can be read as `go control`. `goctl means not to be controlled by code, instead, we control it. The inside `go` is not `golang`. At the very beginning, I was expecting it to help us improve the productivity, and make our lives easier.
+   `goctl`can be read as `go control`. `goctl` means not to be controlled by code, instead, we control it. The inside `go` is not `golang`. At the very beginning, I was expecting it to help us improve the productivity, and make our lives easier.
 
    ```shell
    GO111MODULE=on go get -u github.com/tal-tech/go-zero/tools/goctl
@@ -113,25 +115,23 @@ go get -u github.com/tal-tech/go-zero
    type Request struct {
      Name string `path:"name,options=you|me"` // parameters are auto validated
    }
-   
+
    type Response struct {
      Message string `json:"message"`
    }
-   
+
    service greet-api {
-     @server(
-       handler: GreetHandler
-     )
+     @handler GreetHandler
      get /greet/from/:name(Request) returns (Response);
    }
    ```
-
+   
    the .api files also can be generate by goctl, like below:
 
    ```shell
    goctl api -o greet.api
    ```
-
+   
 3. generate the go server side code
 
    ```shell
@@ -140,7 +140,7 @@ go get -u github.com/tal-tech/go-zero
 
    the generated files look like:
 
-   ```
+   ```Plain Text
    ├── greet
    │   ├── etc
    │   │   └── greet-api.yaml        // configuration file
@@ -159,11 +159,14 @@ go get -u github.com/tal-tech/go-zero
    │           └── types.go          // request/response defined here
    └── greet.api                     // api description file
    ```
+
    the generated code can be run directly:
 
    ```shell
-     cd greet
-     go run greet.go -f etc/greet-api.yaml
+   cd greet
+   go mod init
+   go mod tidy
+   go run greet.go -f etc/greet-api.yaml
    ```
 
    by default, it’s listening on port 8888, while it can be changed in configuration file.
@@ -171,7 +174,7 @@ go get -u github.com/tal-tech/go-zero
    you can check it by curl:
 
    ```shell
-   curl -i http://localhost:8888/greet/from/you
+   curl -i http://localhost:8888/from/you
    ```
 
    the response looks like:
@@ -184,8 +187,9 @@ go get -u github.com/tal-tech/go-zero
 
 4. Write the business logic code
 
-* the dependencies can be passed into the logic within servicecontext.go, like mysql, reds etc.
-* add the logic code in logic package according to .api file
+    * the dependencies can be passed into the logic within servicecontext.go, like mysql, reds etc.
+    * add the logic code in logic package according to .api file
+
 5. Generate code like Java, TypeScript, Dart, JavaScript etc. just from the api file
 
    ```shell
@@ -202,5 +206,9 @@ go get -u github.com/tal-tech/go-zero
 
 ## 8. Documents (adding)
 
-* [Rapid development of microservice systems](doc/shorturl-en.md)
-* [Rapid development of microservice systems - multiple RPCs](doc/bookstore-en.md)
+* [Rapid development of microservice systems](https://github.com/tal-tech/zero-doc/blob/main/doc/shorturl-en.md)
+* [Rapid development of microservice systems - multiple RPCs](https://github.com/tal-tech/zero-doc/blob/main/doc/bookstore-en.md)
+
+## 9. Chat group
+
+Join the chat via https://discord.gg/4JQvC5A4Fe
